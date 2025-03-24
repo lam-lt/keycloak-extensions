@@ -13,12 +13,15 @@ import org.keycloak.services.ui.extend.UiPageProviderFactory;
 
 import java.util.List;
 
+public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactory<ComponentModel> {
 
-public class RealmAttributeUiPage implements UiPageProvider, UiPageProviderFactory<ComponentModel> {
+    private static final Logger log = Logger.getLogger(RealmAttributeUiPageProviderFactory.class);
+    private static final String ID = "Attributes";
 
-    private final Logger log = Logger.getLogger(RealmAttributeUiPage.class);
-
-    private final String ID = "Attributes";
+    @Override
+    public UiPageProvider create(KeycloakSession session) {
+        return new RealmAttributeUiPageProvider(session);
+    }
 
     @Override
     public void init(Config.Scope config) {
@@ -48,15 +51,10 @@ public class RealmAttributeUiPage implements UiPageProvider, UiPageProviderFacto
         validateKeyUniqueness(session, realm, model, key);
         String value = model.get("value");
         realm.setAttribute(key, value);
-
-        // Log
-        log.info("Set realm attribute: " + key + " = " + value);
-        log.info("Get realm attribute, key = " + key + ": " + realm.getAttribute(key));
-
     }
 
     @Override
-    public void onUpdate(KeycloakSession session, RealmModel realm, ComponentModel oldModel , ComponentModel newModel) {
+    public void onUpdate(KeycloakSession session, RealmModel realm, ComponentModel oldModel, ComponentModel newModel) {
         String oldKey = oldModel.get("key");
         String newKey = newModel.get("key");
         if (!oldKey.equals(newKey)) {
@@ -65,20 +63,12 @@ public class RealmAttributeUiPage implements UiPageProvider, UiPageProviderFacto
         }
         String value = newModel.get("value");
         realm.setAttribute(newKey, value);
-
-        // Log
-        log.info("Update realm attribute: " + oldKey + " -> " + newKey + " = " + value);
-        log.info("Get realm attribute, key = " + newKey + ": " + realm.getAttribute(newKey));
     }
 
     @Override
     public void preRemove(KeycloakSession session, RealmModel realm, ComponentModel model) {
         String key = model.get("key");
         realm.removeAttribute(key);
-
-        // Log
-        log.info("Remove realm attribute: " + key);
-        log.info("Get realm attribute, key = " + key + ": " + realm.getAttribute(key));
     }
 
     private void validateKeyUniqueness(KeycloakSession session, RealmModel realm, ComponentModel model, String key) {
