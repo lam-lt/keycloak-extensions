@@ -17,6 +17,7 @@ public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactor
 
     private static final Logger log = Logger.getLogger(RealmAttributeUiPageProviderFactory.class);
     private static final String ID = "Attributes";
+    private KeycloakSession session;
 
     @Override
     public UiPageProvider create(KeycloakSession session) {
@@ -48,7 +49,7 @@ public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactor
     @Override
     public void onCreate(KeycloakSession session, RealmModel realm, ComponentModel model) {
         String key = model.get("key");
-        validateKeyUniqueness(session, realm, model, key);
+        validateKeyUniqueness(realm, model, key);
         String value = model.get("value");
         realm.setAttribute(key, value);
     }
@@ -58,7 +59,7 @@ public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactor
         String oldKey = oldModel.get("key");
         String newKey = newModel.get("key");
         if (!oldKey.equals(newKey)) {
-            validateKeyUniqueness(session, realm, newModel, newKey);
+            validateKeyUniqueness(realm, newModel, newKey);
             realm.removeAttribute(oldKey);
         }
         String value = newModel.get("value");
@@ -71,8 +72,9 @@ public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactor
         realm.removeAttribute(key);
     }
 
-    private void validateKeyUniqueness(KeycloakSession session, RealmModel realm, ComponentModel model, String key) {
+    private void validateKeyUniqueness(RealmModel realm, ComponentModel model, String key) {
         if (key == null || key.trim().isEmpty()) {
+            log.warn("Key is required");
             throw new IllegalArgumentException("Key is required");
         }
         
@@ -82,6 +84,12 @@ public class RealmAttributeUiPageProviderFactory implements UiPageProviderFactor
                 .anyMatch(component -> key.equals(component.get("key")));
         
         if (isDuplicate) {
+            log.warn("Component with key '" + key + "' already exists.");
+            throw new IllegalArgumentException("Entry with key '" + key + "' already exists. Keys must be unique.");
+        }
+
+        if (realm.getAttribute(key) != null) {
+            log.warn("Realm attribute with key '" + key + "' already exists.");
             throw new IllegalArgumentException("Entry with key '" + key + "' already exists. Keys must be unique.");
         }
     }
