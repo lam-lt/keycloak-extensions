@@ -13,7 +13,7 @@ import org.keycloak.services.ui.extend.UiPageProviderFactory;
 import java.util.List;
 
 
-public class AdminUiPage implements UiPageProvider, UiPageProviderFactory<ComponentModel> {
+public class RealmAttributeUiPage implements UiPageProvider, UiPageProviderFactory<ComponentModel> {
 
     private final String ID = "Attributes";
 
