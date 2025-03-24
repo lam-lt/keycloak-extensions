@@ -1,0 +1,44 @@
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_USERNAME: lamlt
+      KC_DB_PASSWORD: lamlt
+    command:
+      - start
+      - --http-enabled=true
+      - --hostname-strict=false
+      - --features=declarative-ui
+    volumes:
+      - ./target/keycloak-extensions-1.0-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-extensions-1.0-SNAPSHOT.jar
+    ports:
+      - "8080:8080"
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: lamlt
+      POSTGRES_PASSWORD: lamlt
+      POSTGRES_DB: keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
