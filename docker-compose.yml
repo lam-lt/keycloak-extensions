@@ -21,6 +21,7 @@ services:
       - --features=declarative-ui
     volumes:
       - ./target/keycloak-extensions-1.0-SNAPSHOT.jar:/opt/keycloak/providers/keycloak-extensions-1.0-SNAPSHOT.jar
+      - ./themes:/opt/keycloak/themes
     ports:
       - "8080:8080"
 
