@@ -19,21 +19,14 @@ public class CaptureFingerprintAuthenticator implements Authenticator {
     private static final Logger log = Logger.getLogger(CaptureFingerprintAuthenticator.class);
 
     // CRITICAL: Matches the 'name' attribute of the hidden input in login.ftl
-    public static final String FINGERPRINT_PARAM = "browserFingerprint";
+    public static final String FINGERPRINT_PARAM = "device_fingerprint";
 
     // Key used to store the fingerprint in the authentication session notes
     public static final String FINGERPRINT_AUTH_NOTE = "browser.fingerprint";
 
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        // This authenticator primarily works on the POST data in the 'action' phase.
-        // Calling attempted() signifies we might need user input (the form hasn't been submitted yet in this phase).
-        context.attempted();
-    }
-
-    @Override
-    public void action(AuthenticationFlowContext context) {
-        log.debug("Action triggered in CaptureFingerprintAuthenticator");
+        log.info("Authenticate triggered in CaptureFingerprintAuthenticator");
         try {
             MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
             if (formData == null) {
@@ -45,7 +38,7 @@ public class CaptureFingerprintAuthenticator implements Authenticator {
             String fingerprint = formData.getFirst(FINGERPRINT_PARAM);
 
             if (fingerprint != null && !fingerprint.trim().isEmpty()) {
-                log.debugf("Retrieved browser fingerprint (hash): %s", fingerprint); // Avoid logging full fingerprint if sensitive
+                log.infof("Retrieved browser fingerprint (hash): %s", fingerprint); // Avoid logging full fingerprint if sensitive
                 AuthenticationSessionModel authSession = context.getAuthenticationSession();
                 if (authSession != null) {
                     // Store it in the AuthenticationSessionModel notes.
@@ -65,6 +58,10 @@ public class CaptureFingerprintAuthenticator implements Authenticator {
         }
         // Always proceed to the next step
         context.success();
+    }
+
+    @Override
+    public void action(AuthenticationFlowContext context) {
     }
 
     @Override
