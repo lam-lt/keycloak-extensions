@@ -1,1 +1,2 @@
 com.letunglam.authentication.CaptureFingerprintAuthenticator$Factory
+com.letunglam.authentication.DeviceIdAuthenticator$Factory
