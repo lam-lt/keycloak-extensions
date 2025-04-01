@@ -69,28 +69,27 @@
                         </div>
 
                         <!-- Browser Fingerprint Integration -->
-                        <input type="hidden" id="browserFingerprint" name="browserFingerprint" value=""/>
-                        <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js" defer></script>
+                        <input type="hidden" id="fingerprint" name="fingerprint" value=""/>
+
+                        <!-- Local FingerprintJS Implementation -->
+                        <script src="${url.resourcesPath}/js/fingerprintjs.min.js"></script>
                         <script>
-                            document.addEventListener('DOMContentLoaded', (event) => {
-                                const fpPromise = FingerprintJS.load();
+                        // Initialize the FingerprintJS agent
+                        const fpPromise = FingerprintJS.load();
 
-                                (async () => {
-                                    try {
-                                        const fp = await fpPromise;
-                                        const result = await fp.get();
-                                        const visitorId = result.visitorId;
-                                        const inputElement = document.getElementById('browserFingerprint');
-
-                                        if (inputElement) {
-                                            inputElement.value = visitorId;
-                                        } else {
-                                            console.error(`FingerprintJS: Could not find hidden input element with ID: browserFingerprint`);
-                                        }
-                                    } catch (error) {
-                                        console.error('FingerprintJS: Error during initialization or fingerprint generation:', error);
-                                    }
-                                })();
+                        // Get the visitor identifier and add it to the form
+                        fpPromise
+                            .then(fp => fp.get())
+                            .then(result => {
+                                // This is the visitor identifier
+                                const visitorId = result.visitorId;
+                                console.log('FingerprintJS ID:', visitorId);
+                                
+                                // Set the fingerprint value in the hidden input
+                                document.getElementById('fingerprint').value = visitorId;
+                            })
+                            .catch(error => {
+                                console.error('Error generating fingerprint:', error);
                             });
                         </script>
                     </form>
@@ -129,4 +128,4 @@
             </div>
         </#if>
     </#if>
-</@layout.registrationLayout> 
+</@layout.registrationLayout>
