@@ -69,7 +69,7 @@
                         </div>
 
                         <!-- Browser Fingerprint Integration -->
-                        <input type="hidden" id="fingerprint" name="fingerprint" value=""/>
+                        <input type="hidden" id="device_fingerprint" name="device_fingerprint" value=""/>
 
                         <!-- Local FingerprintJS Implementation -->
                         <script src="${url.resourcesPath}/js/fingerprintjs.min.js"></script>
@@ -86,7 +86,7 @@
                                 console.log('FingerprintJS ID:', visitorId);
                                 
                                 // Set the fingerprint value in the hidden input
-                                document.getElementById('fingerprint').value = visitorId;
+                                document.getElementById('device_fingerprint').value = visitorId;
                             })
                             .catch(error => {
                                 console.error('Error generating fingerprint:', error);
